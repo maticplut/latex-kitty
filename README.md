@@ -83,7 +83,15 @@ from reading your files. The sandbox does that job instead.
 
 - The sandbox can't see TeX packages in `~/texmf`. Packages from your TeX
   installation work.
-- Inside tmux or Zellij, the terminal size in pixels may not reach the mod.
+- Zellij doesn't show the images, so display math stays as TeX.
+- Inside tmux, images show only with these lines in `~/.tmux.conf`:
+
+  ```
+  set -g allow-passthrough on
+  set -g focus-events on
+  ```
+
+  The terminal size in pixels may also not reach the mod inside tmux.
   Equations are then drawn for 8×16 pixel cells.
 - An equation wider than the window is shrunk by the terminal, so it looks
   softer.

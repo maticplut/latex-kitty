@@ -70,7 +70,7 @@ function sandboxed(bwrap: string, dir: string, argv: string[]): string[] {
 const MAX_RUNNING = 3
 
 // `png` is the picture as base64. It goes to the terminal as bytes, not as a
-// file name, as image.nvim does, so it also works inside Zellij.
+// file name, as image.nvim does, so it also works inside tmux.
 type Drawn = { file: string; png: string; columns: number; rows: number } | { error: string }
 type Job = { key: string; body: string; dpi: number; cell: Cell }
 type Tools = { latex: string; dvipng: string; magick: string; rm: string; bwrap: string; python: string | null; cacheDir: string }
