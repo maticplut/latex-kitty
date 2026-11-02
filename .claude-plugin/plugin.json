@@ -1,0 +1,25 @@
+{
+  "name": "latex-kitty",
+  "version": "0.1.0",
+  "description": "Draws display math in Claude's replies as images in kitty, and simple inline math as Unicode",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "color": {
+      "type": "string",
+      "title": "Math color",
+      "description": "Text color of the drawn equations, as hex (#rrggbb). Match it to kitty's foreground.",
+      "default": "#ffffff"
+    },
+    "size": {
+      "type": "number",
+      "title": "Math size",
+      "description": "How big display equations are drawn. 1 makes one line of TeX one terminal row.",
+      "default": 1.33
+    }
+  },
+  "license": "MIT",
+  "repository": "https://github.com/maticplut/latex-kitty",
+  "author": {
+    "name": "Matic Plut"
+  }
+}

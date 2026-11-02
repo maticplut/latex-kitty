@@ -1,0 +1,12 @@
+{
+  "name": "latex-kitty",
+  "description": "Sharp LaTeX equations in Claude Code, drawn in the kitty terminal",
+  "owner": { "name": "Matic Plut" },
+  "plugins": [
+    {
+      "name": "latex-kitty",
+      "source": "./",
+      "description": "Draws display math in Claude's replies as images in kitty, and simple inline math as Unicode"
+    }
+  ]
+}
