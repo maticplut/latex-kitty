@@ -4,8 +4,16 @@ import { inlineToUnicode, split, toUnicode } from './parse'
 test('display math is split out, code fences are not', () => {
   const pieces = split('Loss:\n\n$$L = \\sum_i e_i^2$$\n\n```\n$$not math$$\n```\n\\begin{align*}a &= b\\end{align*}')
   expect(pieces.map(p => p.kind)).toEqual(['text', 'math', 'text', 'math'])
-  expect(pieces[1]).toEqual({ kind: 'math', tex: '$$L = \\sum_i e_i^2$$', body: '\\[ L = \\sum_i e_i^2 \\]' })
+  expect(pieces[1]).toEqual({ kind: 'math', tex: '$$L = \\sum_i e_i^2$$', body: '\\[ L = \\sum_i e_i^2 \\]', inner: 'L = \\sum_i e_i^2' })
   expect(pieces[3]?.kind === 'math' && pieces[3].body).toBe('\\begin{align*}a &= b\\end{align*}')
+})
+
+test('the inner formula drops delimiters and begin/end', () => {
+  const inner = (text: string) => split(text).flatMap(p => (p.kind === 'math' ? [p.inner] : []))
+  expect(inner('$$ a + b $$')).toEqual(['a + b'])
+  expect(inner('\\[ x^2 \\]')).toEqual(['x^2'])
+  expect(inner('\\begin{align*}\na &= b\n\\end{align*}')).toEqual(['a &= b'])
+  expect(inner('\\begin{alignat}{2}a &= b\\end{alignat}')).toEqual(['a &= b'])
 })
 
 test('simple inline math becomes Unicode', () => {

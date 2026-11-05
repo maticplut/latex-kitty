@@ -86,6 +86,11 @@ let cell: Cell = FALLBACK_CELL
 let probedColumns = -1
 let wantProbe = false
 let probing = false
+// Equations shown as TeX code after a press on [ show ], by message id and
+// place in the message.
+const showingCode = new Set<string>()
+// Columns the buttons right of an equation take: `[ copy ]` and a gap.
+const BUTTONS = 9
 
 export const register: Register = (on, options) => {
   const color = /^#?[0-9a-fA-F]{6}$/.test(String(options.color)) ? String(options.color).replace('#', '').toUpperCase() : 'FFFFFF'
@@ -119,8 +124,9 @@ export const register: Register = (on, options) => {
     }
 
     await read($, version)
-    const { Box, Text, Markdown, Image } = $.ui.resolve(e)
-    const width = Math.max(10, viewportColumns - 2)
+    const { Box, Text, Markdown, Image, Button } = $.ui.resolve(e)
+    // The [ copy ] and [ show ] buttons take BUTTONS columns on the right.
+    const width = Math.max(10, viewportColumns - 2 - BUTTONS)
     const jobCell = cell
     const dpi = dpiFor(jobCell, size)
 
@@ -135,20 +141,48 @@ export const register: Register = (on, options) => {
         queued.add(key)
         queue.push({ key, body: piece.body, dpi, cell: jobCell })
       }
+      const id = `${e.requestId}:${i}`
+      const copy = (
+        <Button key={`copy:${id}`} label="copy" onPress={press => void $.ui.copy({ text: piece.inner, surface: press.surface })} />
+      )
       if (drawn && 'file' in drawn) {
+        const asCode = showingCode.has(id)
+        const toggle = (
+          <Button
+            key={`show:${id}`}
+            label={asCode ? 'hide' : 'show'}
+            onPress={() => {
+              if (!showingCode.delete(id)) showingCode.add(id)
+              finished = true
+            }}
+          />
+        )
         const scale = Math.min(1, width / drawn.columns)
         const columns = Math.max(1, Math.floor(drawn.columns * scale))
         const rows = Math.max(1, Math.round(drawn.rows * scale))
         return (
-          <Box key={`m${i}`} width={width}>
-            <Image source={{ png: drawn.png }} columns={columns} rows={rows} alt={piece.tex} />
+          <Box key={`m${i}`} flexDirection="row" gap={1}>
+            <Box width={width} flexShrink={0}>
+              {asCode ? (
+                <Markdown text={'```tex\n' + piece.tex + '\n```'} />
+              ) : (
+                <Image source={{ png: drawn.png }} columns={columns} rows={rows} alt={piece.tex} />
+              )}
+            </Box>
+            <Box flexDirection="column" flexShrink={0}>
+              {copy}
+              {toggle}
+            </Box>
           </Box>
         )
       }
       return (
-        <Box key={`m${i}`} flexDirection="column">
-          <Markdown text={'```tex\n' + piece.tex + '\n```'} />
-          {drawn && 'error' in drawn ? <Text dimColor>latex: {drawn.error}</Text> : null}
+        <Box key={`m${i}`} flexDirection="row" gap={1}>
+          <Box width={width} flexShrink={0} flexDirection="column">
+            <Markdown text={'```tex\n' + piece.tex + '\n```'} />
+            {drawn && 'error' in drawn ? <Text dimColor>latex: {drawn.error}</Text> : null}
+          </Box>
+          <Box flexShrink={0}>{copy}</Box>
         </Box>
       )
     })

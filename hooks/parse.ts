@@ -1,14 +1,15 @@
 // Splits a reply into markdown text and display math, and turns simple
 // inline math into Unicode.
 
-export type Piece = { kind: 'text'; text: string } | { kind: 'math'; tex: string; body: string }
+export type Piece = { kind: 'text'; text: string } | { kind: 'math'; tex: string; body: string; inner: string }
 
 const FENCE = /^ {0,3}(`{3,}|~{3,})[^\n]*\n[\s\S]*?^ {0,3}\1[`~]*[ \t]*$/gm
 const DISPLAY =
   /\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\\begin\{(equation|align|gather|multline|alignat|flalign|eqnarray)(\*?)\}[\s\S]+?\\end\{\3\4\}/g
 
 // Display math outside code fences becomes its own piece. `tex` is the
-// source as written, `body` what goes in the LaTeX document.
+// source as written, `body` what goes in the LaTeX document, and `inner` the
+// formula without its delimiters or \begin/\end, as [ copy ] copies it.
 export function split(text: string): Piece[] {
   const pieces: Piece[] = []
   let last = 0
@@ -27,10 +28,12 @@ function pushOutsideFence(pieces: Piece[], text: string): void {
     pushText(pieces, text.slice(last, m.index))
     const inner = m[1] ?? m[2]
     if (inner !== undefined) {
-      if (inner.trim()) pieces.push({ kind: 'math', tex: m[0], body: `\\[ ${inner.trim()} \\]` })
+      if (inner.trim()) pieces.push({ kind: 'math', tex: m[0], body: `\\[ ${inner.trim()} \\]`, inner: inner.trim() })
       else pushText(pieces, m[0])
     } else {
-      pieces.push({ kind: 'math', tex: m[0], body: m[0] })
+      // alignat takes the number of columns as {n} after \begin.
+      const env = m[0].replace(/^\\begin\{[^}]*\}(?:\{\d+\})?/, '').replace(/\\end\{[^}]*\}$/, '').trim()
+      pieces.push({ kind: 'math', tex: m[0], body: m[0], inner: env })
     }
     last = m.index + m[0].length
   }

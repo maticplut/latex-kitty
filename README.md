@@ -8,6 +8,8 @@ equations in the [kitty](https://sw.kovidgoyal.net/kitty/) terminal.
   an image.
 - Simple inline math, such as `$x^2 + y_i$`, becomes Unicode text (x² + yᵢ).
   Inline math with no simple Unicode form stays as TeX in a code span.
+- Each equation has a `[ copy ]` button that copies its formula and a
+  `[ show ]` button that shows its TeX code. See [Buttons](#buttons).
 - Equations stay sharp when you zoom. The mod reads the terminal's cell size
   in pixels and draws each equation for it, so kitty shows the image pixel for
   pixel instead of scaling it.
@@ -53,6 +55,17 @@ Change these in the plugin's settings in Claude Code.
 | --- | --- | --- |
 | `color` | `#ffffff` | Text color of the equations, as `#rrggbb`. Match it to kitty's foreground color. |
 | `size` | `1.33` | How big equations are drawn. At `1`, one line of TeX is one terminal row. |
+
+## Buttons
+
+Each equation has two buttons on its right:
+
+- `[ copy ]` copies the formula, without `$$`, `\[ \]` or
+  `\begin{...}`/`\end{...}`.
+- `[ show ]` shows the TeX code instead of the image. `[ hide ]` shows the
+  image again.
+
+Claude Code passes mouse clicks to the buttons only in its fullscreen mode.
 
 ## How it works
 
