@@ -1,6 +1,6 @@
 {
   "name": "latex-kitty",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Draws display math in Claude's replies as images in kitty, and simple inline math as Unicode",
   "types": "./types/index.d.ts",
   "userConfig": {
